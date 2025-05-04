@@ -11,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(\App\DataAccess\Interfaces\UserRepositoryInterface::class, \App\DataAccess\Repositories\UserRepository::class);
+
+        $this->app->bind(\App\BusinessLogic\Interfaces\AuthServiceInterface::class, \App\BusinessLogic\Services\AuthService::class);
     }
 
     /**
