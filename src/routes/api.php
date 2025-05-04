@@ -1,6 +1,7 @@
 <?php
 
-use App\Presentation\Controllers\AuthController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,8 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::get('/verify/{token}', [AuthController::class, 'verify']);
+Route::post('/register', [RegistrationController::class, 'register']);
+Route::get('/verify/{token}', [RegistrationController::class, 'verify']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
