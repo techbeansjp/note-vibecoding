@@ -38,10 +38,10 @@ class PostTitleRule implements ValidationRule, DataAwareRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $status = $this->data['status'] ?? 'draft';
-
-        if ($status === 'published' && empty($value)) {
-            $fail('The title field is required when status is published.');
+        if (isset($this->data['status']) && $this->data['status'] === 'published') {
+            if ($value === null || $value === '' || (is_string($value) && trim($value) === '')) {
+                $fail('The title field is required when status is published.');
+            }
         }
     }
 }

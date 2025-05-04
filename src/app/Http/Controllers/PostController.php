@@ -50,6 +50,14 @@ class PostController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
+        
+        if (($request->status === 'published') && empty($request->title)) {
+            return response()->json([
+                'errors' => [
+                    'title' => ['The title field is required when status is published.']
+                ]
+            ], 422);
+        }
 
         $post = $this->postService->createPost($user, $request->all());
 
