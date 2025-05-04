@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
+use App\Rules\PostRules;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 
@@ -33,13 +35,27 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $result = $this->postService->createPost($request->user(), $request->all());
+        $user = $request->user();
 
-        return response()->json(
-            isset($result['errors']) 
-                ? ['errors' => $result['errors']] 
-                : ['message' => $result['message'], 'post' => $result['post'] ?? null],
-            $result['status']
-        );
+        if (!PostRules::authorizeCreate($user)) {
+            return response()->json([
+                'message' => 'Only verified users can create posts'
+            ], 403);
+        }
+
+        $validator = PostRules::validate($request->all());
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $post = $this->postService->createPost($user, $request->all());
+
+        return response()->json([
+            'message' => 'Post created successfully',
+            'post' => $post
+        ], 201);
     }
 }
