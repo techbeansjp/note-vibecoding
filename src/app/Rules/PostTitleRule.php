@@ -4,17 +4,43 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\DataAwareRule;
 
-class PostTitleRule implements ValidationRule
+class PostTitleRule implements ValidationRule, DataAwareRule
 {
+    /**
+     * All of the data under validation.
+     *
+     * @var array
+     */
+    protected $data = [];
+
+    /**
+     * Set the data under validation.
+     *
+     * @param  array  $data
+     * @return $this
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  string  $attribute
+     * @param  mixed  $value
+     * @param  \Closure  $fail
+     * @return void
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (request()->input('status') === 'published' && empty($value)) {
+        $status = $this->data['status'] ?? 'draft';
+
+        if ($status === 'published' && empty($value)) {
             $fail('The title field is required when status is published.');
         }
     }
